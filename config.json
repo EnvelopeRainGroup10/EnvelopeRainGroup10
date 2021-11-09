@@ -1,0 +1,8 @@
+{
+  "maxTimes" : 5,
+  "probability" : 0.8,
+  "totalMoney" : 700000000,
+  "totalNum" : 60000000,
+  "maxMoney" : 2000,
+  "minMoney" : 1
+}
