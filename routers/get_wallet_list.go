@@ -21,7 +21,6 @@ func WalletListHandler(c *gin.Context) {
 
 	uid, _ := c.GetPostForm("uid")
 	logger.Logger.Info("query wallet list",zap.String("uid",uid))
-
 	int_uid, _ := strconv.ParseInt(uid, 10, 64)
 	walletList, err2 := redisClient.RedisClient.GetUserWalletInRedis(int_uid)
 	if err2!=nil{

@@ -4,5 +4,6 @@
   "totalMoney" : 700000000,
   "totalNum" : 60000000,
   "maxMoney" : 2000,
-  "minMoney" : 1
+  "minMoney" : 1,
+  "qpsLimit" : 10000000
 }

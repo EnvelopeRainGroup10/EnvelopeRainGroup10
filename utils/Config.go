@@ -14,11 +14,12 @@ var TotalMoney int64
 var TotalNum int64
 var MaxMoney int64
 var MinMoney int64
+var QpsLimit int64
 
 type Configs map[string]json.RawMessage
 
 type MainConfig struct {
-	Port string `json:"port"`
+	Port    string `json:"port"`
 	Address string `json:"address"`
 }
 
@@ -64,9 +65,9 @@ func InitConfigs(path string) Configs {
 	MaxTimes, _ = strconv.ParseInt(string(confs["maxTimes"]), 10, 64)
 	Probability, _ = strconv.ParseFloat(string(confs["probability"]), 64)
 	TotalMoney, _ = strconv.ParseInt(string(confs["totalMoney"]), 10, 64)
-	TotalNum,_ = strconv.ParseInt(string(confs["totalNum"]), 10, 64)
+	TotalNum, _ = strconv.ParseInt(string(confs["totalNum"]), 10, 64)
 	MaxMoney, _ = strconv.ParseInt(string(confs["maxMoney"]), 10, 64)
-	MinMoney,_ = strconv.ParseInt(string(confs["minMoney"]), 10, 64)
+	MinMoney, _ = strconv.ParseInt(string(confs["minMoney"]), 10, 64)
+	QpsLimit, _ = strconv.ParseInt(string(confs["qpsLimit"]), 10, 64)
 	return confs
 }
-

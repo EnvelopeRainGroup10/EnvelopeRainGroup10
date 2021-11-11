@@ -3,13 +3,14 @@ package main
 import (
 	"envelope_rain_group10/allocation"
 	"envelope_rain_group10/logger"
+	"envelope_rain_group10/ratelimit"
 	redisClient "envelope_rain_group10/redisclient"
 	"envelope_rain_group10/routers"
 	"envelope_rain_group10/sql"
 	"envelope_rain_group10/utils"
 	"github.com/gin-gonic/gin"
 	_ "github.com/go-sql-driver/mysql"
-
+	"time"
 )
 
 func main() {
@@ -32,7 +33,7 @@ func main() {
 	//算法生成红包的id和value的对应表
 	//初始化redis中envelop_id 和 value的对应表
 	//redis需要提供函数func InitEnvelopeValue(values []int)
-	a := allocation.NewAllocation(int(utils.TotalMoney), int(utils.TotalNum) , int(utils.MinMoney), int(utils.MaxMoney))
+	a := allocation.NewAllocation(int(utils.TotalMoney), int(utils.TotalNum), int(utils.MinMoney), int(utils.MaxMoney))
 	//fmt.Printf("%#v\n", a)
 	values := a.AllocateMoney(1000000)
 
@@ -43,6 +44,9 @@ func main() {
 	redisClient.RedisClient.InitRedPacket(s)
 	redisClient.RedisClient.InitCurrentRedPacketID()
 	r := gin.Default()
+
+	//添加限流中间件,每秒流量从配置中获取
+	r.Use(ratelimit.RateLimitMiddleware(time.Second, utils.QpsLimit, utils.QpsLimit))
 	routers.LoadSnatch(r)
 	routers.LoadOpen(r)
 	routers.LoadWalletList(r)
