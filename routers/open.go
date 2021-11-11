@@ -26,13 +26,13 @@ func OpenHandler(c *gin.Context) {
 	uid, _ := c.GetPostForm("uid")
 	envelope_id, _ := c.GetPostForm("envelope_id")
 
-	logs.Printf("envelope %d opened by %d", envelope_id, uid)
+	logs.Printf("envelope %s opened by %s", envelope_id, uid)
 
 	int_uid, _ := strconv.ParseInt(uid, 10, 64)
 	int_envelope_id, _ := strconv.ParseInt(envelope_id, 10, 64)
 
 	//用户红包列表中有无此envelope_id，redis需要返回一个用户红包的数组func GetEnvelopes(uid int64) []int64
-	redPackerList , _ := redisClient.RedisClient.GetUserRedPackerList(int_uid)
+	redPackerList, _ := redisClient.RedisClient.GetUserRedPackerList(int_uid)
 	redPackerListInt := String2Int(redPackerList)
 
 	flag := false
@@ -71,7 +71,7 @@ func OpenHandler(c *gin.Context) {
 	}
 
 	//没开过，用红包id查money并返回,redis需要提供func GetValueByUid(uid int64) int64，
-	value , err := redisClient.RedisClient.GetRedPacketMoney(int_envelope_id)
+	value, err := redisClient.RedisClient.GetRedPacketMoney(int_envelope_id)
 	if err != nil {
 		logs.Println(err)
 	}
