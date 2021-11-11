@@ -14,6 +14,7 @@ func InitLogger() {
 	core := zapcore.NewCore(encoder, writeSyncer, zapcore.ErrorLevel)
 	Logger = zap.New(core)
 }
+
 func getEncoder() zapcore.Encoder {
 	return zapcore.NewJSONEncoder(zap.NewProductionEncoderConfig())
 }

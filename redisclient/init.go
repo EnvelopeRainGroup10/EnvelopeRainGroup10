@@ -8,13 +8,13 @@ import (
 var RedisClient *redisClient
 
 func InitRedisClient()  {
-	var addr string = "127.0.0.1:6379"
-	var password string = ""
+	var addr = "127.0.0.1:6379"
+	var password = ""
 	var db int64 = 0
 	var poolSize int64 = 1000
-	var maxPacketNum int64 = utils.TotalNum
-	var maxGetNum int64 = utils.MaxTimes
-	var keyPre string = "test1:"
+	var maxPacketNum = utils.TotalNum
+	var maxGetNum = utils.MaxTimes
+	var keyPre = "test1:"
 	r, err := NewRedisClient(addr, password, db, poolSize, maxPacketNum, maxGetNum, keyPre)
 	RedisClient = r
 	if err != nil {

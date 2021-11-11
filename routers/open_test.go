@@ -3,8 +3,8 @@ package routers
 import (
 	"envelope_rain_group10/allocation"
 	"envelope_rain_group10/logger"
+	"envelope_rain_group10/model"
 	redisClient "envelope_rain_group10/redisclient"
-	"envelope_rain_group10/sql"
 	"envelope_rain_group10/utils"
 	"github.com/stretchr/testify/assert"
 	"net/http"
@@ -13,7 +13,7 @@ import (
 	"testing"
 )
 
-func TestRouter_Open(t *testing.T)  {
+func TestRouter_Open(t *testing.T) {
 	tests := []struct {
 		name   string
 		param  string
@@ -25,7 +25,7 @@ func TestRouter_Open(t *testing.T)  {
 	}
 
 	r := SetupRouter()
-	db, err := sql.InitDB()
+	db, err := model.InitDB()
 	if err != nil {
 		logger.Logger.Error("database connection failure")
 	}
@@ -37,7 +37,7 @@ func TestRouter_Open(t *testing.T)  {
 	//算法生成红包的id和value的对应表
 	//初始化redis中envelop_id 和 value的对应表
 	//redis需要提供函数func InitEnvelopeValue(values []int)
-	a := allocation.NewAllocation(int(utils.TotalMoney), int(utils.TotalNum) , int(utils.MinMoney), int(utils.MaxMoney))
+	a := allocation.NewAllocation(int(utils.TotalMoney), int(utils.TotalNum), int(utils.MinMoney), int(utils.MaxMoney))
 	//fmt.Printf("%#v\n", a)
 	values := a.AllocateMoney(1000000)
 
@@ -53,7 +53,7 @@ func TestRouter_Open(t *testing.T)  {
 			// mock一个HTTP请求
 			req := httptest.NewRequest(
 				"POST",                      // 请求方法
-				"/open",                    // 请求URL
+				"/open",                     // 请求URL
 				strings.NewReader(tt.param), // 请求参数
 			)
 

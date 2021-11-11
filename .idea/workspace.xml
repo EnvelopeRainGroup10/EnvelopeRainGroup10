@@ -5,10 +5,27 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="a1dd90cd-3b92-4108-a0af-57b557ff6933" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/nsqclient/producer.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/allocation/allocation.go" beforeDir="false" afterPath="$PROJECT_DIR$/allocation/allocation.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/allocation/readme" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/logger/myLogger.go" beforeDir="false" afterPath="$PROJECT_DIR$/logger/logger.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/main.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/redisclient/RedisClient.go" beforeDir="false" afterPath="$PROJECT_DIR$/redisclient/RedisClient.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test.log" beforeDir="false" afterPath="$PROJECT_DIR$/test.log" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mynsq/nsq_cluster_consumer.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mynsq/nsq_cluster_product.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ratelimit/rateLimiter.go" beforeDir="false" afterPath="$PROJECT_DIR$/ratelimit/ratelimiter.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/redisclient/InitRedisClient.go" beforeDir="false" afterPath="$PROJECT_DIR$/redisclient/init.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/redisclient/RedisClient.go" beforeDir="false" afterPath="$PROJECT_DIR$/redisclient/redis_client.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/redisclient/RedisClient_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/redisclient/redis_client_test.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/routers/get_wallet_list.go" beforeDir="false" afterPath="$PROJECT_DIR$/routers/get_wallet_list.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/routers/get_wallet_list_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/routers/get_wallet_list_test.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/routers/open.go" beforeDir="false" afterPath="$PROJECT_DIR$/routers/open.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/routers/open_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/routers/open_test.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/routers/snatch.go" beforeDir="false" afterPath="$PROJECT_DIR$/routers/snatch.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/routers/snatch_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/routers/snatch_test.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sql/models.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/Config.go" beforeDir="false" afterPath="$PROJECT_DIR$/utils/config.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/readme" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -39,12 +56,15 @@
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="format.on.save" value="true" />
     <property name="go.formatter.settings.were.checked" value="true" />
     <property name="go.import.settings.migrated" value="true" />
     <property name="go.modules.go.list.on.any.changes.was.set" value="true" />
     <property name="go.sdk.automatically.set" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/routers" />
-    <property name="settings.editor.selected.configurable" value="preferences.lookFeel" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="node.js.detected.package.eslint" value="true" />
+    <property name="node.js.selected.package.eslint" value="(autodetect)" />
+    <property name="settings.editor.selected.configurable" value="actions.on.save" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
@@ -55,14 +75,6 @@
     </key>
   </component>
   <component name="RunManager" selected="Go Build.go build envelope_rain_group10">
-    <configuration default="true" type="GoApplicationRunConfiguration" factoryName="Go Application">
-      <module name="EnvelopeRainGroup10" />
-      <working_directory value="$PROJECT_DIR$" />
-      <kind value="FILE" />
-      <directory value="$PROJECT_DIR$" />
-      <filePath value="$PROJECT_DIR$" />
-      <method v="2" />
-    </configuration>
     <configuration name="go build envelope_rain_group10" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true" nameIsGenerated="true">
       <module name="EnvelopeRainGroup10" />
       <working_directory value="$PROJECT_DIR$" />
@@ -120,15 +132,6 @@
       <pattern value="^\QTestRouters_Snatch\E$/^\Qtest1\E$" />
       <method v="2" />
     </configuration>
-    <configuration default="true" type="GoTestRunConfiguration" factoryName="Go Test">
-      <module name="EnvelopeRainGroup10" />
-      <working_directory value="$PROJECT_DIR$" />
-      <kind value="DIRECTORY" />
-      <directory value="$PROJECT_DIR$" />
-      <filePath value="$PROJECT_DIR$" />
-      <framework value="gotest" />
-      <method v="2" />
-    </configuration>
     <recent_temporary>
       <list>
         <item itemvalue="Go Build.go build envelope_rain_group10" />
@@ -162,14 +165,9 @@
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="DlvLineBreakpoint">
-          <url>file://$PROJECT_DIR$/redisclient/RedisClient_test.go</url>
+          <url>file://$PROJECT_DIR$/redisclient/redis_client_test.go</url>
           <line>290</line>
           <option name="timeStamp" value="3" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="DlvLineBreakpoint">
-          <url>file://$PROJECT_DIR$/allocation/allocation_test.go</url>
-          <line>8</line>
-          <option name="timeStamp" value="6" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
