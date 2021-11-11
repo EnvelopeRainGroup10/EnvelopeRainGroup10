@@ -1,8 +1,10 @@
 package routers
 
 import (
+	"encoding/json"
 	redisClient "envelope_rain_group10/redisclient"
 	"envelope_rain_group10/sql"
+	"net/http"
 	"sort"
 	"strconv"
 
@@ -20,6 +22,15 @@ func WalletListHandler(c *gin.Context) {
 	logs.Printf("query %s 's wallets", uid)
 
 	int_uid, _ := strconv.ParseInt(uid, 10, 64)
+	walletList, err2 := redisClient.RedisClient.GetUserWalletInRedis(int_uid)
+	if err2!=nil{
+		logs.Printf("读取用户钱包列表缓存时出现未知错误，此错误不影响程序运行，请及时检查")
+	}
+	//存在钱包列表缓存
+	if walletList!=""{
+		c.String(http.StatusOK,walletList)
+		return
+	}
 
 	//现在主要是针对redis查询
 	//需要redis提供用户红包列表(id信息)func GetEnvelopeIdsByUid(uid int64) []int64
@@ -83,6 +94,18 @@ func WalletListHandler(c *gin.Context) {
 			amount = amount + envelopes[i].Value
 		}
 		myArray = append(myArray, curEnvelope)
+	}
+
+	wallet_list_byte, err2 := json.Marshal(myArray)
+	if err2!=nil{
+		logs.Println("json转换错误，放弃将用户钱包列表缓存进数据库，此报错不影响程序运行，请及时检查")
+	}else{
+		//json转换成功才将钱包列表缓存进数据库
+		wallet_json_string:=`{"code":0,"msg":"success","data":{"amount":`+strconv.FormatInt(amount,10)+`,"envelope_list":`+string(wallet_list_byte)+`}}`
+		err2 = redisClient.RedisClient.AddUserWalletToRedis(int_uid, wallet_json_string, 300)
+		if err2!=nil{
+			logs.Println("将用户钱包列表缓存进数据库时出错，此报错不影响程序运行，请及时检查")
+		}
 	}
 
 	c.JSON(200, gin.H{
