@@ -30,18 +30,24 @@ func main() {
 	utils.InitConfigs("./config.json")
 	redisClient.InitRedisClient()
 
+
 	//算法生成红包的id和value的对应表
 	//初始化redis中envelop_id 和 value的对应表
 	//redis需要提供函数func InitEnvelopeValue(values []int)
-	a := allocation.NewAllocation(int(utils.TotalMoney), int(utils.TotalNum), int(utils.MinMoney), int(utils.MaxMoney))
-	//fmt.Printf("%#v\n", a)
-	values := a.AllocateMoney(1000000)
-
-	s := make([]interface{}, len(values))
-	for i, v := range values {
-		s[i] = v
+	initTag, _ := redisClient.RedisClient.ShouldInit()
+	//如果为tru表明setnx成功，那么本次应该初始化，否则表明之前有客户端启动的时候初始化过了，本次不应该初始化
+	if initTag{
+		a := allocation.NewAllocation(int(utils.TotalMoney), int(utils.TotalNum), int(utils.MinMoney), int(utils.MaxMoney))
+		//fmt.Printf("%#v\n", a)
+		//这地方是不是要改回来
+		values := a.AllocateMoney(int(utils.TotalNum))
+		s := make([]interface{}, len(values))
+		for i, v := range values {
+			s[i] = v
+		}
+		redisClient.RedisClient.InitRedPacket(s)
 	}
-	redisClient.RedisClient.InitRedPacket(s)
+
 	redisClient.RedisClient.InitCurrentRedPacketID()
 	r := gin.Default()
 

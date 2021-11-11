@@ -3,6 +3,7 @@ package redisClient
 import (
 	"bytes"
 	"envelope_rain_group10/logger"
+	"envelope_rain_group10/utils"
 	"github.com/go-redis/redis"
 	"strconv"
 	"time"
@@ -44,7 +45,6 @@ type redisClient struct {
 //maxGetNum：每个人最多可以抢几个红包
 //keyPre：redis中容易的key的前缀，建议每次部署使用不同前缀
 func NewRedisClient(addr,password string,db,poolSize,maxPacketNum,maxGetNum int64,keyPre string)( *redisClient,error)  {
-
 	rdb:=redis.NewClient(&redis.Options{
 		Addr:     addr,
 		Password: password,
@@ -75,23 +75,63 @@ func (rc *redisClient)CloseClient()error{
 	return err
 }
 
+//查看当前redis中是否存在初始化过标记，如果存在表明本次启动没必要初始化
+func (rc *redisClient)ShouldInit()(bool,error)  {
+	buffer := bytes.Buffer{}
+	buffer.WriteString(rc.keyPre)
+	buffer.WriteString("shouldInitTag")
+	key:=buffer.String()
+	result, err := rc.rdb.SetNX(key, 0, 0).Result()
+	if err!=nil{
+		logger.Logger.Error("查询本次启动是否需要初始化时出错")
+		return false, err
+	}
+	return result,nil
+
+}
+
 //初始化红包值列表到Redis中，重置当前可抢红包id为0
 //返回值表示是否初始化成功
 //本方法只应该调用一次，常规情况无需调用
 func (rc *redisClient)InitRedPacket(redPacketList []interface{}) (bool,error){
+	totalnum:=utils.TotalNum
+	start:=int64(0)
+	//分100次处理，如果红包数过多记得还得调整这个的值。
+	step:=totalnum/100
+	end:=start+step
+	for ;end<=totalnum;{
+		_,err:= rc.rdb.RPush(rc.redPacketListKeyName,redPacketList[start:end]...).Result()
+		if err!=nil{
+			logger.Logger.Error("缓存红包列表失败,请清空redis")
+			return false,err
+		}
+
+		start=end
+		if end+step<=totalnum{
+			end+=step
+		}else {
+			break
+		}
+	}
 
 	//把红包金额列表压入缓存中
-	//这个要不要存到数据库里面？
-	_,err:= rc.rdb.RPush(rc.redPacketListKeyName,redPacketList...).Result()
-
-	if err!=nil{
-		logger.Logger.Error("缓存红包列表失败")
-		return false,err
+	if start<totalnum{
+		_,err:= rc.rdb.RPush(rc.redPacketListKeyName,redPacketList[start:]...).Result()
+		if err!=nil{
+			logger.Logger.Error("缓存红包列表失败")
+			return false,err
+		}
 	}
+	//_,err:= rc.rdb.RPush(rc.redPacketListKeyName,redPacketList...).Result()
+	//
+	//if err!=nil{
+	//	logger.Logger.Error("缓存红包列表失败")
+	//	return false,err
+	//}
 
 
 	//如果插入成功了，那么就把当前可获取的红包id也给加到redis中
-	_, err = rc.rdb.Set(rc.currentRedPacketIdKeyName, 0, 0).Result()
+	_, err := rc.rdb.Set(rc.currentRedPacketIdKeyName, 0, 0).Result()
 
 	if err!=nil{
 		logger.Logger.Error("初始化可获取红包id失败")
