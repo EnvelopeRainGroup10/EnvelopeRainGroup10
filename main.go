@@ -2,23 +2,23 @@ package main
 
 import (
 	"envelope_rain_group10/allocation"
+	"envelope_rain_group10/logger"
 	redisClient "envelope_rain_group10/redisclient"
 	"envelope_rain_group10/routers"
 	"envelope_rain_group10/sql"
 	"envelope_rain_group10/utils"
 	"github.com/gin-gonic/gin"
 	_ "github.com/go-sql-driver/mysql"
-	"log"
+
 )
 
-
-
 func main() {
+	logger.InitLogger()
 
 	//创建数据库连接
 	db, err := sql.InitDB()
 	if err != nil {
-		log.Println("database connection failure")
+		logger.Logger.Error("数据库链接失败")
 	}
 	defer db.Close()
 

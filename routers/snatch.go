@@ -1,13 +1,12 @@
 package routers
 
 import (
+	"envelope_rain_group10/logger"
 	"envelope_rain_group10/redisclient"
 	"envelope_rain_group10/sql"
 	"envelope_rain_group10/utils"
-	"fmt"
 	"github.com/gin-gonic/gin"
-	logs "github.com/sirupsen/logrus"
-	"log"
+	"go.uber.org/zap"
 	"math/rand"
 	"strconv"
 	"time"
@@ -22,25 +21,25 @@ func SnatchHandler(c *gin.Context) {
 	//每个人能抢的最大红包数应该从配置文件读进来
 
 	uid, _ := c.GetPostForm("uid")
-	logs.Printf("%s is snatching envelope", uid)
+	logger.Logger.Info("snatching envelope",zap.String("uid",uid))
 	int_uid, _ := strconv.ParseInt(uid, 10, 64)
 
 	exist, err := redisClient.RedisClient.ExistUser(int_uid)
 	if err != nil {
-		log.Println(err)
+		logger.Logger.Error(err.Error())
 	}
 
 	if exist == false {
 		sql.GetUser(int_uid)
 		err := redisClient.RedisClient.CreateUserInRedis(int_uid)
 		if err != nil {
-			logs.Println(err)
+			logger.Logger.Error(err.Error())
 		}
 	}
 	flag := true
 	count, err := redisClient.RedisClient.GetCountWithNextRedPacketByUserId(int_uid)
 	if err != nil {
-		logs.Println(err)
+		logger.Logger.Error(err.Error())
 	}
 
 	if count == -1 {
@@ -62,8 +61,6 @@ func SnatchHandler(c *gin.Context) {
 	probability := int(utils.Probability * 1000000)
 	rand_num := rand.Intn(1000000)
 
-	fmt.Println(rand_num)
-	fmt.Println(probability)
 
 	if rand_num >= probability {
 		flag = false
@@ -79,7 +76,7 @@ func SnatchHandler(c *gin.Context) {
 		timeStamp := time.Now().Unix()
 		redPacketId, err := redisClient.RedisClient.GetRedPacket()
 		if err != nil {
-			logs.Println(err)
+			logger.Logger.Error(err.Error())
 		}
 
 		if redPacketId==-1{

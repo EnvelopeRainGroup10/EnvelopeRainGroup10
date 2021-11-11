@@ -41,7 +41,7 @@ func TestRouters_Snatch(t *testing.T)  {
 	r := SetupRouter()
 	db, err := sql.InitDB()
 	if err != nil {
-		log.Println("database connection failure")
+		logger.Logger.Error("database connection failure")
 	}
 	defer db.Close()
 	redisClient.InitRedisClient()

@@ -1,9 +1,9 @@
 package sql
 
 import (
+	"envelope_rain_group10/logger"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
-	"log"
 	"time"
 )
 
@@ -44,7 +44,7 @@ func InitDB() (*gorm.DB, error) {
 		//db.AutoMigrate(&User{}, &Envelope{})
 		return db, err
 	}
-	log.Println(err)
+	logger.Logger.Error(err.Error())
 	return nil, err
 }
 

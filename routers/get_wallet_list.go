@@ -2,14 +2,15 @@ package routers
 
 import (
 	"encoding/json"
+	"envelope_rain_group10/logger"
 	redisClient "envelope_rain_group10/redisclient"
 	"envelope_rain_group10/sql"
+	"go.uber.org/zap"
 	"net/http"
 	"sort"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-	logs "github.com/sirupsen/logrus"
 )
 
 func LoadWalletList(e *gin.Engine) {
@@ -19,12 +20,12 @@ func LoadWalletList(e *gin.Engine) {
 func WalletListHandler(c *gin.Context) {
 
 	uid, _ := c.GetPostForm("uid")
-	logs.Printf("query %s 's wallets", uid)
+	logger.Logger.Info("query wallet list",zap.String("uid",uid))
 
 	int_uid, _ := strconv.ParseInt(uid, 10, 64)
 	walletList, err2 := redisClient.RedisClient.GetUserWalletInRedis(int_uid)
 	if err2!=nil{
-		logs.Printf("读取用户钱包列表缓存时出现未知错误，此错误不影响程序运行，请及时检查")
+		logger.Logger.Error("读取用户钱包列表缓存时出现未知错误，此错误不影响程序运行，请及时检查")
 	}
 	//存在钱包列表缓存
 	if walletList!=""{
@@ -36,7 +37,7 @@ func WalletListHandler(c *gin.Context) {
 	//需要redis提供用户红包列表(id信息)func GetEnvelopeIdsByUid(uid int64) []int64
 	//walletList, err := redisClient.RedisClient.GetUserWalletInRedis(int_uid)
 	//if err != nil {
-	//	logs.Println(err)
+	//	logger.Logger.Error(err.Error())
 	//}
 
 	//if walletList != "" {
@@ -53,7 +54,7 @@ func WalletListHandler(c *gin.Context) {
 
 	redPackageList, err := redisClient.RedisClient.GetUserRedPackerList(int_uid)
 	if err != nil {
-		logs.Println(err)
+		logger.Logger.Error(err.Error())
 	}
 	redPackageListInt := String2Int(redPackageList)
 
@@ -98,13 +99,13 @@ func WalletListHandler(c *gin.Context) {
 
 	wallet_list_byte, err2 := json.Marshal(myArray)
 	if err2!=nil{
-		logs.Println("json转换错误，放弃将用户钱包列表缓存进数据库，此报错不影响程序运行，请及时检查")
+		logger.Logger.Error("json转换错误，放弃将用户钱包列表缓存进数据库，此报错不影响程序运行，请及时检查")
 	}else{
 		//json转换成功才将钱包列表缓存进数据库
 		wallet_json_string:=`{"code":0,"msg":"success","data":{"amount":`+strconv.FormatInt(amount,10)+`,"envelope_list":`+string(wallet_list_byte)+`}}`
 		err2 = redisClient.RedisClient.AddUserWalletToRedis(int_uid, wallet_json_string, 300)
 		if err2!=nil{
-			logs.Println("将用户钱包列表缓存进数据库时出错，此报错不影响程序运行，请及时检查")
+			logger.Logger.Error("将用户钱包列表缓存进数据库时出错，此报错不影响程序运行，请及时检查")
 		}
 	}
 

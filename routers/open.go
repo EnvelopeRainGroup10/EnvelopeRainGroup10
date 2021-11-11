@@ -1,12 +1,13 @@
 package routers
 
 import (
+	"envelope_rain_group10/logger"
 	redisClient "envelope_rain_group10/redisclient"
 	"envelope_rain_group10/sql"
+	"go.uber.org/zap"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-	logs "github.com/sirupsen/logrus"
 )
 
 func LoadOpen(e *gin.Engine) {
@@ -26,7 +27,7 @@ func OpenHandler(c *gin.Context) {
 	uid, _ := c.GetPostForm("uid")
 	envelope_id, _ := c.GetPostForm("envelope_id")
 
-	logs.Printf("envelope %d opened by %d", envelope_id, uid)
+	logger.Logger.Info("open envelope by",zap.String("uid",uid))
 
 	int_uid, _ := strconv.ParseInt(uid, 10, 64)
 	int_envelope_id, _ := strconv.ParseInt(envelope_id, 10, 64)
@@ -56,7 +57,7 @@ func OpenHandler(c *gin.Context) {
 	//检查红包是否打开，redis需要返回一个用户红包的数组func HasOpened(envelope_id int64) bool，
 	opened, err := redisClient.RedisClient.RedPacketOpened(int_envelope_id)
 	if err != nil {
-		logs.Println(err)
+		logger.Logger.Error(err.Error())
 	}
 	//开过，返回提示
 	if opened == true {
@@ -73,19 +74,19 @@ func OpenHandler(c *gin.Context) {
 	//没开过，用红包id查money并返回,redis需要提供func GetValueByUid(uid int64) int64，
 	value , err := redisClient.RedisClient.GetRedPacketMoney(int_envelope_id)
 	if err != nil {
-		logs.Println(err)
+		logger.Logger.Error(err.Error())
 	}
 
 	//失效钱包列表缓存
 	err = redisClient.RedisClient.MakeWalletCacheInvalid(int_uid)
 	if err != nil {
-		logs.Println(err)
+		logger.Logger.Error(err.Error())
 	}
 
 	//修改bitmap数组状态
 	err = redisClient.RedisClient.OpenRedPacketInRedisBitMap(int_envelope_id)
 	if err != nil {
-		logs.Println(err)
+		logger.Logger.Error(err.Error())
 	}
 
 	//更新数据库opened状态 func UpdateState(envelope_id int64)

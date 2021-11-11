@@ -1,8 +1,8 @@
 package redisClient
 
 import (
+	"envelope_rain_group10/logger"
 	"envelope_rain_group10/utils"
-	"log"
 )
 
 var RedisClient *redisClient
@@ -18,6 +18,6 @@ func InitRedisClient()  {
 	r, err := NewRedisClient(addr, password, db, poolSize, maxPacketNum, maxGetNum, keyPre)
 	RedisClient = r
 	if err != nil {
-		log.Println(err)
+		logger.Logger.Error(err.Error())
 	}
 }

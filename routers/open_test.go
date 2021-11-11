@@ -2,11 +2,11 @@ package routers
 
 import (
 	"envelope_rain_group10/allocation"
+	"envelope_rain_group10/logger"
 	redisClient "envelope_rain_group10/redisclient"
 	"envelope_rain_group10/sql"
 	"envelope_rain_group10/utils"
 	"github.com/stretchr/testify/assert"
-	"log"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -27,7 +27,7 @@ func TestRouter_Open(t *testing.T)  {
 	r := SetupRouter()
 	db, err := sql.InitDB()
 	if err != nil {
-		log.Println("database connection failure")
+		logger.Logger.Error("database connection failure")
 	}
 	defer db.Close()
 	redisClient.InitRedisClient()
