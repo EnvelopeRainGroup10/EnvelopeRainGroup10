@@ -7,9 +7,10 @@ import (
 
 var RedisClient *redisClient
 
-func InitRedisClient()  {
-	var addr = "127.0.0.1:6379"
-	var password = ""
+func InitRedisClient() {
+	// var addr = "redis-cn02a2vagk7trou1z-direct.redis.ivolces.com:6380"
+	var addr = "redis-cn02a2vagk7trou1z.redis.volces.com:6379"
+	var password = "Njuse2021"
 	var db int64 = 0
 	var poolSize int64 = 1000
 	var maxPacketNum = utils.TotalNum

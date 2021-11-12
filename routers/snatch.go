@@ -18,8 +18,15 @@ func LoadSnatch(e *gin.Engine) {
 }
 
 func SnatchHandler(c *gin.Context) {
-	//每个人能抢的最大红包数应该从配置文件读进来
 
+	//值可以设为星号,也可以指定具体主机地址,可设置多个地址用逗号隔开,设为指定主机地址第三项才有效
+	c.Header("Access-Control-Allow-Origin", "*")
+	//允许请求头修改的类容
+	c.Header("Access-Control-Allow-Headers", "Content-Type")
+	//允许使用cookie
+	c.Header("Access-Control-Allow-Credentials", "true")
+
+	//每个人能抢的最大红包数应该从配置文件读进来
 	uidString, _ := c.GetPostForm("uid")
 	logger.Logger.Info("snatching envelope", zap.String("uid", uidString))
 	uid, _ := strconv.ParseInt(uidString, 10, 64)
