@@ -39,6 +39,25 @@ func OpenHandler(c *gin.Context) {
 	uid, _ := strconv.ParseInt(uidString, 10, 64)
 	envelopeId, _ := strconv.ParseInt(envelopeString, 10, 64)
 
+	exist, err2 := redisClient.RedisClient.ExistUser(uid)
+	if err2==nil{
+		//如果用户不存在，则直接返回
+		if exist!=true{
+			c.JSON(200,gin.H{
+				"code": -4,
+				"msg":  "user not exist",
+				"data": gin.H{
+					"uid": uid,
+				},
+			})
+			return
+		}
+
+	}else {
+		logger.Logger.Error("查询用户是否存在时失败，此错误不影响程序运行，请及时检查")
+	}
+
+
 	//用户红包列表中有无此envelope_id，redis需要返回一个用户红包的数组func GetEnvelopes(uid int64) []int64
 	redPackerList, _ := redisClient.RedisClient.GetUserRedPackerList(uid)
 	redPackerListInt := String2Int(redPackerList)

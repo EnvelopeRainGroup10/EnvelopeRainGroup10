@@ -39,6 +39,26 @@ func WalletListHandler(c *gin.Context) {
 		return
 	}
 
+	exist, err2 := redisClient.RedisClient.ExistUser(uid)
+	if err2==nil{
+		//如果用户不存在，则直接返回
+		if exist!=true{
+			c.JSON(200,gin.H{
+				"code": -1,
+				"msg":  "user not exist",
+				"data": gin.H{
+					"amount":        0,
+					"envelope_list": gin.H{},
+				},
+			})
+			return
+		}
+
+	}else {
+		logger.Logger.Error("查询用户是否存在时失败，此错误不影响程序运行，请及时检查")
+	}
+
+
 	redPackageList, err := redisClient.RedisClient.GetUserRedPackerList(uid)
 	if err != nil {
 		logger.Logger.Error(err.Error())
