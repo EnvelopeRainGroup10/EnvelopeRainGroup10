@@ -53,8 +53,6 @@ func OpenHandler(c *gin.Context) {
 			return
 		}
 
-	}else {
-		logger.Logger.Error("查询用户是否存在时失败，此错误不影响程序运行，请及时检查")
 	}
 
 

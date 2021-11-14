@@ -50,10 +50,15 @@ func NewRedisClient(addr,password string,db,poolSize,maxPacketNum,maxGetNum int6
 		Password: password,
 		DB:       int(db),
 		PoolSize: int(poolSize),
+		IdleTimeout: 10*time.Minute,
+		DialTimeout: 10*time.Minute,
+		ReadTimeout: 10*time.Minute,
+		WriteTimeout: 10*time.Minute,
+		PoolTimeout: 11*time.Minute,
 	})
 	_, err := rdb.Ping().Result()
 	if err != nil {
-		logger.Logger.Error("链接redis失败")
+		logger.Logger.Error(err.Error())
 		return nil,err
 	}
 
@@ -83,7 +88,7 @@ func (rc *redisClient)ShouldInit()(bool,error)  {
 	key:=buffer.String()
 	result, err := rc.rdb.SetNX(key, 0, 0).Result()
 	if err!=nil{
-		logger.Logger.Error("查询本次启动是否需要初始化时出错")
+		logger.Logger.Error(err.Error())
 		return false, err
 	}
 	return result,nil
@@ -102,7 +107,7 @@ func (rc *redisClient)InitRedPacket(redPacketList []interface{}) (bool,error){
 	for ;end<=totalnum;{
 		_,err:= rc.rdb.RPush(rc.redPacketListKeyName,redPacketList[start:end]...).Result()
 		if err!=nil{
-			logger.Logger.Error("缓存红包列表失败,请清空redis")
+			logger.Logger.Error(err.Error())
 			return false,err
 		}
 
@@ -118,7 +123,7 @@ func (rc *redisClient)InitRedPacket(redPacketList []interface{}) (bool,error){
 	if start<totalnum{
 		_,err:= rc.rdb.RPush(rc.redPacketListKeyName,redPacketList[start:]...).Result()
 		if err!=nil{
-			logger.Logger.Error("缓存红包列表失败")
+			logger.Logger.Error(err.Error())
 			return false,err
 		}
 	}
@@ -134,7 +139,7 @@ func (rc *redisClient)InitRedPacket(redPacketList []interface{}) (bool,error){
 	_, err := rc.rdb.Set(rc.currentRedPacketIdKeyName, 0, 0).Result()
 
 	if err!=nil{
-		logger.Logger.Error("初始化可获取红包id失败")
+		logger.Logger.Error(err.Error())
 		return false,err
 	}
 
@@ -167,12 +172,12 @@ func (rc *redisClient)InitCurrentRedPacketID(){
 func (rc *redisClient)GetRedPacketMoney(redPacketId int64)(int64,error){
 	result, err := rc.rdb.LIndex(rc.redPacketListKeyName, redPacketId - 1).Result()
 	if err!=nil{
-		logger.Logger.Error("未能成功获取红包金额")
+		logger.Logger.Error(err.Error())
 		return -1,err
 	}else {
 		parseInt, err := strconv.ParseInt(result, 10, 64)
 		if err!=nil{
-			logger.Logger.Error("红包金额转换为int时失败")
+			logger.Logger.Error(err.Error())
 			return -1,err
 		}
 		return parseInt,nil
@@ -196,7 +201,7 @@ func(rc *redisClient)GetCountWithNextRedPacketByUserId (userId int64)(int64,erro
 	if err!=nil{
 		//如果是key不存在报错那么不管他，否则报错
 		if err!=redis.Nil{
-			logger.Logger.Error("用户获取他抢了多少个红包时出错")
+			logger.Logger.Error(err.Error())
 		}
 	}else {
 		count,err:=strconv.ParseInt(res,10,64)
@@ -210,7 +215,7 @@ func(rc *redisClient)GetCountWithNextRedPacketByUserId (userId int64)(int64,erro
 
 	result, err := rc.rdb.Incr(key).Result()
 	if err!=nil{
-		logger.Logger.Error("用户竞争红包时出现错误")
+		logger.Logger.Error(err.Error())
 		return -1,err
 	}else {
 		if result>rc.maxGetNum{
@@ -232,7 +237,7 @@ func (rc *redisClient)ReduceUserGetRedPacketCount(userId int64)error{
 	key:=buffer.String()
 	_, err := rc.rdb.Decr(key).Result()
 	if err!=nil{
-		logger.Logger.Error("减少用户已抢到红包计数时出错")
+		logger.Logger.Error(err.Error())
 		return err
 	}
 	return nil
@@ -250,7 +255,7 @@ func (rc *redisClient)GetRedPacket()(int64,error)  {
 
 		result, err := rc.rdb.Incr(rc.currentRedPacketIdKeyName).Result()
 		if err!=nil{
-			logger.Logger.Error("将红包id自增时发生错误")
+			logger.Logger.Error(err.Error())
 			return -1,err
 		}
 		//抢到的红包id大于红包个数，抢夺无效
@@ -280,7 +285,7 @@ func(rc *redisClient)AddToUserRedPacketList(userId,redPacketId int64)error{
 	key:=buffer.String()
 	_, err := rc.rdb.RPush(key, redPacketId).Result()
 	if err!=nil{
-		logger.Logger.Error("将红包Id插入红包列表的缓存时出错")
+		logger.Logger.Error(err.Error())
 		return err
 	}
 	return nil
@@ -295,7 +300,7 @@ func(rc *redisClient)AddToUserRedPacketTimeList(userId,timeStamp int64)error{
 	key:=buffer.String()
 	_, err := rc.rdb.RPush(key, timeStamp).Result()
 	if err!=nil{
-		logger.Logger.Error("将红包时间插入红包时间列表的缓存时出错")
+		logger.Logger.Error(err.Error())
 		return err
 	}
 	return nil
@@ -313,7 +318,7 @@ func(rc *redisClient)GetUserRedPackerList(userId int64)([]string,error){
 	result, err := rc.rdb.LRange(key, 0, -1).Result()
 	if err!=nil{
 		
-		logger.Logger.Error("获取用户红包列表时出错")
+		logger.Logger.Error(err.Error())
 		return nil, err
 	}
 
@@ -332,7 +337,7 @@ func(rc *redisClient)GetUserRedPackerTimeList(userId int64)([]string,error){
 
 	result, err := rc.rdb.LRange(key, 0, -1).Result()
 	if err!=nil{
-		logger.Logger.Error("获取用户红包时间列表时出错")
+		logger.Logger.Error(err.Error())
 		return nil, err
 	}
 
@@ -345,7 +350,7 @@ func (rc *redisClient)ExistUser(userId int64)(bool,error)  {
 	key:=splicingString(rc.keyPre,userExistedBitMapKeyName)
 	result, err := rc.rdb.GetBit(key, userId).Result()
 	if err!=nil{
-		logger.Logger.Error("获取用户是否存在信息时失败")
+		logger.Logger.Error(err.Error())
 		return false,err
 	}
 	if result==1{
@@ -359,7 +364,7 @@ func (rc *redisClient)CreateUserInRedis(userId int64)error{
 	key:=splicingString(rc.keyPre,userExistedBitMapKeyName)
 	_, err := rc.rdb.SetBit(key, userId, 1).Result()
 	if err!=nil{
-		logger.Logger.Error("在缓存中创建用户时失败")
+		logger.Logger.Error(err.Error())
 		return err
 	}
 	return nil
@@ -374,7 +379,7 @@ func (rc *redisClient)MakeWalletCacheInvalid(userId int64)error{
 	key:=buffer.String()
 	_, err := rc.rdb.Del(key).Result()
 	if err!=nil{
-		logger.Logger.Error("删除钱包缓存出错")
+		logger.Logger.Error(err.Error())
 		return err
 	}
 	return  nil
@@ -388,7 +393,7 @@ func (rc *redisClient)AddUserWalletToRedis(userId int64,walletJson string,expira
 	key:=buffer.String()
 	_, err := rc.rdb.Set(key, walletJson, time.Duration(expirationTime)*time.Second).Result()
 	if err!=nil{
-		logger.Logger.Error("将用户钱包列表缓存进redis时出错")
+		logger.Logger.Error(err.Error())
 		return err
 	}
 	return nil
@@ -423,7 +428,7 @@ func (rc *redisClient)RedPacketOpened(redPacketId int64)(bool,error)  {
 	key := splicingString(rc.keyPre, redPacketOpenedBitMapKeyName)
 	result, err := rc.rdb.GetBit(key, redPacketId).Result()
 	if err!=nil{
-		logger.Logger.Error("查询红包是否拆开时出错")
+		logger.Logger.Error(err.Error())
 		return false, err
 	}
 	if result==1{
@@ -439,7 +444,7 @@ func (rc *redisClient)OpenRedPacketInRedisBitMap(redPacketId int64) error {
 	key := splicingString(rc.keyPre, redPacketOpenedBitMapKeyName)
 	_, err := rc.rdb.SetBit(key, redPacketId,1).Result()
 	if err!=nil{
-		logger.Logger.Error("将红包标记为拆开时出错")
+		logger.Logger.Error(err.Error())
 		return err
 	}
 	return nil
@@ -476,7 +481,7 @@ func (rc *redisClient)getCurrentRedPacketID()int64{
 		if err==redis.Nil{
 			//当前redis里面没有当前可获取红包id这个项，检查是否初始化完成
 			
-			logger.Logger.Error("redis不存在可获取红包id这一项")
+			logger.Logger.Error(err.Error())
 			return -1
 		}
 	}
@@ -485,7 +490,7 @@ func (rc *redisClient)getCurrentRedPacketID()int64{
 	//错误处理
 	if err!=nil{
 		
-		logger.Logger.Error("字符串到int转换错误")
+		logger.Logger.Error(err.Error())
 		return -1
 	}
 
@@ -499,7 +504,7 @@ func (rc *redisClient)initRedPacketOpenedBitMap()bool{
 	_, err := rc.rdb.SetBit(key, 0, 0).Result()
 	if err!=nil{
 		
-		logger.Logger.Error("初始化记录红包是否开启的BitMap失败")
+		logger.Logger.Error(err.Error())
 		return false
 	}
 	return true
@@ -511,7 +516,7 @@ func (rc *redisClient)initUserExistedBitMap()bool{
 	_, err := rc.rdb.SetBit(key, 0, 0).Result()
 	if err!=nil{
 		
-		logger.Logger.Error("初始化记录用户是否存在的BitMap失败")
+		logger.Logger.Error(err.Error())
 		return false
 	}
 	return true
@@ -535,7 +540,7 @@ func(rc *redisClient)GetNumOfRedPacketByUserId (userId int64)int64  {
 		if err==redis.Nil{
 			//当前redis里面没有当前可获取红包id这个项，检查是否初始化完成
 			
-			logger.Logger.Error("redis中没有用户获取过的红包次数这一项")
+			logger.Logger.Error(err.Error())
 			//如果从这里返回就得考虑是真的第一次进还是key过期了，后面从数据库里读
 			return -1
 		}
@@ -544,7 +549,7 @@ func(rc *redisClient)GetNumOfRedPacketByUserId (userId int64)int64  {
 	parseInt, err := strconv.ParseInt(result, 10, 64)
 	if err!=nil{
 		
-		logger.Logger.Error("获取用户开过的红包次数时转化为数值失败")
+		logger.Logger.Error(err.Error())
 	}
 	return parseInt
 

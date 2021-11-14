@@ -12,7 +12,7 @@ func InitRedisClient() {
 	var addr = "redis-cn02a2vagk7trou1z.redis.volces.com:6379"
 	var password = "Njuse2021"
 	var db int64 = 0
-	var poolSize int64 = 10000
+	var poolSize int64 = 2000
 	var maxPacketNum = utils.TotalNum
 	var maxGetNum = utils.MaxTimes
 	var keyPre = "test1:"

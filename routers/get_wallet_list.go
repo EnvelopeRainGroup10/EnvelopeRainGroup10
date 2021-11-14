@@ -30,9 +30,6 @@ func WalletListHandler(c *gin.Context) {
 	logger.Logger.Info("query wallet list", zap.String("uid", uidString))
 	uid, _ := strconv.ParseInt(uidString, 10, 64)
 	walletList, err2 := redisClient.RedisClient.GetUserWalletInRedis(uid)
-	if err2 != nil {
-		logger.Logger.Error("读取用户钱包列表缓存时出现未知错误，此错误不影响程序运行，请及时检查")
-	}
 	//存在钱包列表缓存
 	if walletList != "" {
 		c.String(http.StatusOK, walletList)
@@ -54,8 +51,6 @@ func WalletListHandler(c *gin.Context) {
 			return
 		}
 
-	}else {
-		logger.Logger.Error("查询用户是否存在时失败，此错误不影响程序运行，请及时检查")
 	}
 
 

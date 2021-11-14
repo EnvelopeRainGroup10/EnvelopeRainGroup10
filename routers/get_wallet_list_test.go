@@ -2,8 +2,6 @@ package routers
 
 import (
 	"envelope_rain_group10/allocation"
-	"envelope_rain_group10/logger"
-	"envelope_rain_group10/model"
 	redisClient "envelope_rain_group10/redisclient"
 	"envelope_rain_group10/utils"
 	"github.com/stretchr/testify/assert"
@@ -23,11 +21,6 @@ func TestRouter_Get_Wallet_List(t *testing.T) {
 	}
 
 	r := SetupRouter()
-	db, err := model.InitDB()
-	if err != nil {
-		logger.Logger.Error("database connection failure")
-	}
-	defer db.Close()
 	redisClient.InitRedisClient()
 	utils.InitConfigs("./config-test.json")
 	redisClient.InitRedisClient()
@@ -65,7 +58,6 @@ func TestRouter_Get_Wallet_List(t *testing.T) {
 			assert.Equal(t, http.StatusOK, w.Code)
 
 			// 解析并检验响应内容是否复合预期
-			assert.Nil(t, err)
 			assert.Equal(t, tt.expect, w.Body.String())
 		})
 	}
