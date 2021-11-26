@@ -5,14 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c8e59f78-fe00-44ba-9270-a7d32703b4b2" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/config.json" beforeDir="false" afterPath="$PROJECT_DIR$/config.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/redisclient/init.go" beforeDir="false" afterPath="$PROJECT_DIR$/redisclient/init.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/redisclient/redis_client.go" beforeDir="false" afterPath="$PROJECT_DIR$/redisclient/redis_client.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/routers/get_wallet_list.go" beforeDir="false" afterPath="$PROJECT_DIR$/routers/get_wallet_list.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/routers/get_wallet_list_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/routers/get_wallet_list_test.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/routers/open.go" beforeDir="false" afterPath="$PROJECT_DIR$/routers/open.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/routers/open_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/routers/open_test.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/envelope_rain_group10" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -40,8 +33,8 @@
     <property name="go.import.settings.migrated" value="true" />
     <property name="go.modules.go.list.on.any.changes.was.set" value="true" />
     <property name="go.sdk.automatically.set" value="true" />
-    <property name="last_opened_file_path" value="$USER_HOME$" />
-    <property name="settings.editor.selected.configurable" value="preferences.lookFeel" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
   </component>
   <component name="RunManager">
     <configuration name="go build envelope_rain_group10" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true" nameIsGenerated="true">
@@ -62,6 +55,17 @@
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>
